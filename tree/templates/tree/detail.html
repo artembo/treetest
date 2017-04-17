@@ -1,0 +1,84 @@
+{% extends 'tree/base.html' %}
+
+{% block content %}
+	<div class="jumbotron">
+	  <h1>Генератор данных</h1>
+	  <p>Многопоточный генератор данных для базы данных nested set</p>
+	  {% if not referats %}
+	  <p><a class="btn btn-primary btn-lg" href="#" role="button" id="generate"><i id="spinner" class="fa fa-refresh fa-spin fa-fw"></i>Генерировать данные</a></p>
+	  <span id="runner"></span>
+	  {% else %}
+  	  <p><a class="btn btn-danger btn-lg" href="#" role="button" id="delete">Удалить данные</a></p>		
+	  {% endif %}
+	</div>
+
+
+	{% load mptt_tags %}
+
+	<div class="row">
+		<div class="col-md-6">
+			<ul>
+			    {% recursetree referats %}
+			        <li>
+          				<a {% if node.pk|slugify in request.path %} style="color:red" {% endif %} href="/detail/{{ node.pk }}"> {{ node.name }} </a>
+			            {% if not node.is_leaf_node %}
+			                <ul class="children">
+			                    {{ children }}
+			                </ul>
+			            {% endif %}
+			        </li>
+			    {% endrecursetree %}
+			</ul>
+		</div>
+		<div class="col-md-6">
+			<h2>{{ ref.name }}</h2>
+			<p>{{ ref.text }}</p>
+		</div>
+		
+	</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+	var $loading = $('#spinner').hide();
+	$(document)
+	  .ajaxStart(function () {
+	    $loading.show();
+	  })
+	  .ajaxStop(function () {
+	    $loading.hide();
+	  });
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+			var cookie = jQuery.trim(cookies[i]);
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	
+	var csrftoken = getCookie('csrftoken');
+	$('#delete').click(function(e) {
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: '/delete',
+			data: {
+				'csrfmiddlewaretoken':csrftoken,
+			},
+			success: function(data) {
+				alert('Данные удалены');
+				window.location.replace('/')
+			}
+		});
+	});
+
+</script>
+{% endblock %}

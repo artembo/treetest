@@ -1,0 +1,117 @@
+{% extends 'tree/base.html' %}
+
+{% block content %}
+	<div class="jumbotron">
+	  <h1>Генератор данных</h1>
+	  <p>Многопоточный генератор данных для базы данных nested set</p>
+	  {% if not referats %}
+	  <p><a class="btn btn-primary btn-lg" href="#" role="button" id="generate"><i id="spinner" class="fa fa-refresh fa-spin fa-fw"></i>Генерировать данные</a></p>
+
+	  <a role="button" data-toggle="collapse" href="#settings" aria-expanded="false" aria-controls="settings">*</a>
+
+<div class="collapse" id="settings">
+  <div class="well">
+	  <label for="threads">threads</label>
+	  <input max="100" min="1" name="threads" step="1" type="number" value="8" id="threads">
+	  <label for="copies">copies</label>
+	  <input max="100" min="1" name="copies" step="1" type="number" value="5" id="copies">
+	  <label for="first">1</label>
+	  <input max="1000" min="10" name="first" step="10" type="number" value="100" id="first">
+	  <label for="second">2</label>
+	  <input max="1000" min="10" name="second" step="10" type="number" value="100" id="second">
+	  <label for="third">3</label>
+	  <input max="1000" min="10" name="third" step="10" type="number" value="500" id="third">
+	  <label for="fourth">4</label>
+	  <input max="1000" min="10" name="fourth" step="10" type="number" value="300" id="fourth">
+  </div>
+</div>
+
+	  <h2 id="runner"></h2>
+	  {% else %}
+  	  <p><a class="btn btn-danger btn-lg" href="#" role="button" id="delete">Удалить данные</a></p>		
+	  {% endif %}
+	</div>
+
+
+	{% load mptt_tags %}
+<ul>
+    {% recursetree referats %}
+        <li>
+           <a href="/detail/{{ node.pk }}"> {{ node.name }} </a>
+            {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+</ul>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+	var $loading = $('#spinner').hide();
+	$(document)
+	  .ajaxStart(function () {
+	    $loading.show();
+	  })
+	  .ajaxStop(function () {
+	    $loading.hide();
+	  });
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+			var cookie = jQuery.trim(cookies[i]);
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	
+	var csrftoken = getCookie('csrftoken');
+	$('#generate').click(function(e) {
+		$('#generate').unbind('click');
+		e.preventDefault();
+		$('#runner').runner();
+		$('#runner').runner('start');
+		$.ajax({
+			type: "POST",
+			url: '/generate',
+			data: {
+				'csrfmiddlewaretoken':csrftoken,
+				'threads': $('#threads').val(),
+				'copies': $('#copies').val(),
+				'first': $('#first').val(),
+				'second': $('#second').val(),
+				'third': $('#third').val(),
+				'fourth': $('#fourth').val()
+			},
+			success: function(data) {
+				$('#runner').runner('stop');
+				alert(data);
+				window.location.replace('/')
+			}
+		});
+	});
+	$('#delete').click(function(e) {
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: '/delete',
+			data: {
+				'csrfmiddlewaretoken':csrftoken,
+			},
+			success: function(data) {
+				alert('Данные удалены');
+				window.location.replace('/')
+			}
+		});
+	});
+
+</script>
+{% endblock %}
