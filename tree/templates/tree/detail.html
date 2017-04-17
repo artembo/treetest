@@ -1,5 +1,5 @@
 {% extends 'tree/base.html' %}
-
+{% load cache %}
 {% block content %}
 	<div class="jumbotron">
 	  <h1>Генератор данных</h1>
@@ -18,6 +18,7 @@
 	<div class="row">
 		<div class="col-md-6">
 			<ul>
+			{% cache 500 branches %}
 			    {% recursetree referats %}
 			        <li>
           				<a {% if node.pk|slugify in request.path %} style="color:red" {% endif %} href="/detail/{{ node.pk }}"> {{ node.name }} </a>
@@ -28,6 +29,7 @@
 			            {% endif %}
 			        </li>
 			    {% endrecursetree %}
+			{% endcache %}
 			</ul>
 		</div>
 		<div class="col-md-6">
