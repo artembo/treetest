@@ -25,7 +25,7 @@ SECRET_KEY = '0sypwr(dlqiu+-1=d*t+dhz33dnzbis8a9f7wd_3o*oayquj)%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['laptopclinic.ru',]
 
 
 # Application definition
