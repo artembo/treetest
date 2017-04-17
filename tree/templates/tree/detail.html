@@ -3,7 +3,7 @@
 {% block content %}
 	<div class="jumbotron">
 	  <h1>Генератор данных</h1>
-	  <p>Многопоточный генератор данных для базы данных nested set</p>
+	  <p>Многопоточный генератор данных для базы данных nested set {{ pk }}</p>
 	  {% if not referats %}
 	  <p><a class="btn btn-primary btn-lg" href="#" role="button" id="generate"><i id="spinner" class="fa fa-refresh fa-spin fa-fw"></i>Генерировать данные</a></p>
 	  <span id="runner"></span>
@@ -21,7 +21,7 @@
 			{% cache 500 branches %}
 			    {% recursetree referats %}
 			        <li>
-          				<a {% if node.pk|slugify in request.path %} style="color:red" {% endif %} href="/detail/{{ node.pk }}"> {{ node.name }} </a>
+          				<a {% if node.pk|slugify == key %} style="color:red" {% endif %} href="/detail/{{ node.pk }}"> {{ node.name }} </a>
 			            {% if not node.is_leaf_node %}
 			                <ul class="children">
 			                    {{ children }}

@@ -111,6 +111,7 @@ def detail(request, pk):
 	referat = get_object_or_404(Referat, pk=pk)
 	args = {
 		'referats': referats,
-		'ref': referat
+		'ref': referat,
+		'key': pk
 	}
 	return render(request, 'tree/detail.html', args)
