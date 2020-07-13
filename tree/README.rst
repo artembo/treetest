@@ -3,7 +3,7 @@ testing reST blocks
 
 .. code-block:: console
 
-  make install
+  make install && python -m SimpleHTTPServer
 
 
 .. code-block:: ruby
