@@ -1,7 +1,7 @@
 testing reST blocks
 
 
-.. code-block:: bash
+.. code-block:: shell-session
 
   make install
 
