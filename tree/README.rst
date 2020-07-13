@@ -1,10 +1,9 @@
 testing reST blocks
 
 
-.. code-block::
+.. code-block:: bash
 
-  @a = "using code-block"
-  puts @a
+  make install
 
 
 .. code-block:: ruby
